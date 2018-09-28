@@ -31,6 +31,8 @@ const User = new Schema({
 const Names = mongoose.model("Name", User);
 //******/
 
+app.get("/", (req, res) => res.sendFile("public/index.html"));
+
 //1 - Register in dataBase
 app.post("/exercise/new-user", async (req, res) => {
   const { username } = req.body;
@@ -45,11 +47,17 @@ app.post("/exercise/new-user", async (req, res) => {
     const id_generated = randomstring.generate(7);
     await Names.create({
       name: username,
-      _id: id_generated
+      id: id_generated
     });
     res.json({
       name: username,
-      _id: id_generated
+      id: id_generated
     });
   }
+});
+
+//2 - Show all regitred users
+app.get("/api/exercise/users", async (req, res) => {
+  const arrayquer = await Names.find({ __v: 0 });
+  console.log(arrayquer);
 });
