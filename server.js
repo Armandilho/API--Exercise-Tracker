@@ -58,6 +58,7 @@ app.post("/exercise/new-user", async (req, res) => {
 
 //2 - Show all regitred users
 app.get("/api/exercise/users", async (req, res) => {
+  arr = [];
   const arrayquer = await Names.find({ __v: 0 });
-  console.log(arrayquer);
+  res.json(arrayquer);
 });
