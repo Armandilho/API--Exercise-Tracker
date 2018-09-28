@@ -28,39 +28,28 @@ const User = new Schema({
   name: String
 });
 
-const Names = mongoose.model("Url", User);
+const Names = mongoose.model("Name", User);
 //******/
 
-app.get("/", (req, res) => res.sendFile("public/index.html"));
-
-app.get("/query/:username", async (req, res) => {
-  /*
-  const { username } = req.params;
-  const arrayquer = await Names.find({ name: username });
-  if (arrayquer.length != 0) {
-    res.json({ name: username });
-  } else {
-    res.json({ error: "name not found" });
-  }
-  */
-});
-
-//Register in dataBase
-app.post("/registro", async (req, res) => {
+//1 - Register in dataBase
+app.post("/exercise/new-user", async (req, res) => {
   const { username } = req.body;
   const arrayquer = await Names.find({ name: username });
-  //Before the registering , i will search the database.
+  //Before the registering , i will search the database for possible matches.
+  //if there is no match, the return of find() will be a empty array "[]"
+  //soo the array.length will be equal to 0, if something is found the length will be different
+  //from 0.
   if (arrayquer.length != 0) {
     res.json({ error: "username alredy regitred" });
   } else {
     const id_generated = randomstring.generate(7);
     await Names.create({
       name: username,
-      id: id_generated
+      _id: id_generated
     });
     res.json({
       name: username,
-      id: id_generated
+      _id: id_generated
     });
   }
 });
