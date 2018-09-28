@@ -1,0 +1,22 @@
+{
+  "name": "api--exercise-tracker",
+  "version": "1.0.0",
+  "description": "A program who register an username and and associates it with an id. After that allows the user to register an exercise, with time, name and date.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Armandilho/API--Exercise-Tracker.git"
+  },
+  "author": "Diego Armando",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Armandilho/API--Exercise-Tracker/issues"
+  },
+  "homepage": "https://github.com/Armandilho/API--Exercise-Tracker#readme",
+  "dependencies": {
+    "express": "^4.16.3"
+  }
+}
