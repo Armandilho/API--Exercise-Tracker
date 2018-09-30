@@ -53,6 +53,7 @@ app.post("/exercise/new-user", async (req, res) => {
     });
     res.json({
       name: username
+      //i need to get the ID from schema and put here
     });
   }
 });
