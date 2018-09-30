@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-const randomstring = require("randomstring");
+const shortid = require("shortid");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + "/public"));
@@ -25,6 +25,10 @@ mongoose.connect(
 const Schema = mongoose.Schema;
 
 const User = new Schema({
+  _id: {
+    type: String,
+    default: shortid.generate
+  },
   name: String
 });
 
@@ -44,21 +48,17 @@ app.post("/exercise/new-user", async (req, res) => {
   if (arrayquer.length != 0) {
     res.json({ error: "username alredy regitred" });
   } else {
-    const id_generated = randomstring.generate(7);
     await Names.create({
-      name: username,
-      id: id_generated
+      name: username
     });
     res.json({
-      name: username,
-      id: id_generated
+      name: username
     });
   }
 });
 
 //2 - Show all regitred users
 app.get("/api/exercise/users", async (req, res) => {
-  arr = [];
-  const arrayquer = await Names.find({ __v: 0 });
+  const arrayquer = await Names.find();
   res.json(arrayquer);
 });
