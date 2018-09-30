@@ -48,11 +48,17 @@ app.post("/exercise/new-user", async (req, res) => {
   if (arrayquer.length != 0) {
     res.json({ error: "username alredy regitred" });
   } else {
+    //Eu queria puxar o _id do default, porém está me retornando undefined
+    //Para contornar esse problema estou criando outro id, com 9 caracteres e usando
+    //o mesmo id para a criação do MODEL e para o Json.
+    const _id = shortid.generate(9);
     await Names.create({
-      name: username
+      name: username,
+      _id: _id
     });
     res.json({
-      name: username
+      name: username,
+      _id: _id
       //i need to get the ID from schema and put here
     });
   }
