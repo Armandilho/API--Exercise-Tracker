@@ -48,7 +48,8 @@ const Exercises = new Schema({
     min: [1, "duration too short"]
   },
   date: {
-    type: Date
+    type: Date,
+    default: Date.now
   },
   username: String,
   userId: {
@@ -79,7 +80,6 @@ app.post("/exercise/new-user", async (req, res) => {
     res.json({
       name: usuario.name,
       id: usuario._id
-      //i need to get the ID from schema and put here
     });
   }
 });
@@ -94,43 +94,60 @@ app.get("/api/exercise/users", async (req, res) => {
 app.post("/api/exercise/add", async (req, res) => {
   const { exerciseId, exerciseName, exerciseDuration, exerciseDate } = req.body;
   const arrayquer = await Names.find({ _id: exerciseId });
-  //Esse vai ser o parametro para construir as datas inseridas,
-  //no lugar dessa string vai ser usado o "exerciseDate"
-  console.log(new Date("07-23-1996").toDateString());
   //Before the registering , i will search the database for possible matches. If something is
   //found(A valid ID), i will create a model and insert into the mongodb database.
   if (arrayquer.length != 0) {
     const name = arrayquer[0].name;
     const id = arrayquer[0]._id;
+
     if (exerciseDate === "") {
       exercicio = await descrOfExerc.create({
         username: name,
         description: exerciseName,
         duration: exerciseDuration,
-        userId: id,
-        date: new Date().toDateString()
+        userId: id
       });
+      //Here i format the date to fit into the patterns of the exercise, in that case
+      //i will use the default date of my schema
+      dateString = new Date(exercicio.date).toUTCString();
+      dateString = dateString
+        .split(" ")
+        .slice(0, 4)
+        .join(" ");
+      //*******/
       res.json({
         username: name,
         description: exerciseName,
         duration: exerciseDuration,
         _id: id,
-        date: new Date().toDateString()
+        date: dateString
       });
     } else {
+      //Here i format the date to fit into the patterns of the exercise, here i will
+      //use the inserted date on body.paramater
+      dateString = new Date(exerciseDate).toUTCString();
+      dateString = dateString
+        .split(" ")
+        .slice(0, 4)
+        .join(" ");
+      //*******/
+
+      if (dateString === "Invalid Date") {
+        res.json({ error: "invalida date" });
+      }
       await descrOfExerc.create({
         username: name,
         description: exerciseName,
         duration: exerciseDuration,
         userId: id,
-        date: exerciseDate
+        date: dateString
       });
       res.json({
         username: name,
         description: exerciseName,
         duration: exerciseDuration,
         _id: id,
-        date: exerciseDate
+        date: dateString
       });
     }
   } else {
