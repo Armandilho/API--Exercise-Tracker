@@ -48,8 +48,7 @@ const Exercises = new Schema({
     min: [1, "duration too short"]
   },
   date: {
-    type: Date,
-    default: Date.now
+    type: Date
   },
   username: String,
   userId: {
@@ -92,29 +91,48 @@ app.get("/api/exercise/users", async (req, res) => {
 });
 
 //3 - add an exercise
-app.post("/add", async (req, res) => {
+app.post("/api/exercise/add", async (req, res) => {
   const { exerciseId, exerciseName, exerciseDuration, exerciseDate } = req.body;
   const arrayquer = await Names.find({ _id: exerciseId });
-  console.log(arrayquer);
-  const name = arrayquer[0].name;
-  const id = arrayquer[0]._id;
-  //Before the registering , i will search the database for possible matches.
+  //Esse vai ser o parametro para construir as datas inseridas,
+  //no lugar dessa string vai ser usado o "exerciseDate"
+  console.log(new Date("07-23-1996").toDateString());
+  //Before the registering , i will search the database for possible matches. If something is
+  //found(A valid ID), i will create a model and insert into the mongodb database.
   if (arrayquer.length != 0) {
-    descrOfExerc.create({
-      username: name,
-      description: exerciseName,
-      duration: exerciseDuration,
-      userId: id,
-      date: exerciseDate
-    });
-
-    res.json({
-      username: name,
-      description: exerciseName,
-      duration: exerciseDuration,
-      _id: id,
-      date: exerciseDate
-    });
+    const name = arrayquer[0].name;
+    const id = arrayquer[0]._id;
+    if (exerciseDate === "") {
+      exercicio = await descrOfExerc.create({
+        username: name,
+        description: exerciseName,
+        duration: exerciseDuration,
+        userId: id,
+        date: new Date().toDateString()
+      });
+      res.json({
+        username: name,
+        description: exerciseName,
+        duration: exerciseDuration,
+        _id: id,
+        date: new Date().toDateString()
+      });
+    } else {
+      await descrOfExerc.create({
+        username: name,
+        description: exerciseName,
+        duration: exerciseDuration,
+        userId: id,
+        date: exerciseDate
+      });
+      res.json({
+        username: name,
+        description: exerciseName,
+        duration: exerciseDuration,
+        _id: id,
+        date: exerciseDate
+      });
+    }
   } else {
     res.json({ error: "this id does not exist in the database" });
   }
