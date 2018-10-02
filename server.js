@@ -54,12 +54,11 @@ const Exercises = new Schema({
   username: String,
   userId: {
     type: String,
-    ref: "Users",
     index: true
   }
 });
 
-const nameExercises = mongoose.model("Exercise", Exercises);
+const descrOfExerc = mongoose.model("Exercise", Exercises);
 
 //******/
 app.get("/", (req, res) => res.sendFile("public/index.html"));
@@ -97,8 +96,25 @@ app.post("/add", async (req, res) => {
   const { exerciseId, exerciseName, exerciseDuration, exerciseDate } = req.body;
   const arrayquer = await Names.find({ _id: exerciseId });
   console.log(arrayquer);
+  const name = arrayquer[0].name;
+  const id = arrayquer[0]._id;
   //Before the registering , i will search the database for possible matches.
   if (arrayquer.length != 0) {
+    descrOfExerc.create({
+      username: name,
+      description: exerciseName,
+      duration: exerciseDuration,
+      userId: id,
+      date: exerciseDate
+    });
+
+    res.json({
+      username: name,
+      description: exerciseName,
+      duration: exerciseDuration,
+      _id: id,
+      date: exerciseDate
+    });
   } else {
     res.json({ error: "this id does not exist in the database" });
   }
