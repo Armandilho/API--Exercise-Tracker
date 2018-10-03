@@ -15,7 +15,7 @@ app.listen(port, function() {
 //******/
 
 //Mongoose conection
-const MONGO_URI = process.env.MONGODB_URI || "mongodb://localhost/test";
+const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost/test";
 
 mongoose.connect(
   MONGO_URI,
