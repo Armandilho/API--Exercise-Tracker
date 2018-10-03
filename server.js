@@ -15,8 +15,10 @@ app.listen(port, function() {
 //******/
 
 //Mongoose conection
+const MONGO_URI = process.env.MONGODB_URI || "mongodb://localhost/test";
+
 mongoose.connect(
-  "mongodb://localhost/test",
+  MONGO_URI,
   { useNewUrlParser: true }
 );
 //******/
@@ -39,12 +41,10 @@ const Names = mongoose.model("naame", User);
 const Exercises = new Schema({
   description: {
     type: String,
-    required: true,
     maxlength: [20, "description too long"]
   },
   duration: {
     type: Number,
-    required: true,
     min: [1, "duration too short"]
   },
   date: {
@@ -55,6 +55,9 @@ const Exercises = new Schema({
   userId: {
     type: String,
     index: true
+  },
+  registerDate: {
+    type: String
   }
 });
 
@@ -66,6 +69,9 @@ app.get("/", (req, res) => res.sendFile("public/index.html"));
 //1 - Register in dataBase
 app.post("/exercise/new-user", async (req, res) => {
   const { username } = req.body;
+  if (username === "") {
+    res.json("Please insert an username");
+  }
   const arrayquer = await Names.find({ name: username });
   //Before the registering , i will search the database for possible matches.
   //if there is no match, the return of find() will be a empty array "[]"
@@ -93,7 +99,13 @@ app.get("/api/exercise/users", async (req, res) => {
 //3 - add an exercise
 app.post("/api/exercise/add", async (req, res) => {
   const { exerciseId, exerciseName, exerciseDuration, exerciseDate } = req.body;
+  if (exerciseName === "") {
+    res.json("You did not filled the name of exercise");
+  } else if (exerciseDuration === "") {
+    res.json("You did not filled the duration of exercise");
+  }
   const arrayquer = await Names.find({ _id: exerciseId });
+
   //Before the registering , i will search the database for possible matches. If something is
   //found(A valid ID), i will create a model and insert into the mongodb database.
   if (arrayquer.length != 0) {
@@ -101,26 +113,28 @@ app.post("/api/exercise/add", async (req, res) => {
     const id = arrayquer[0]._id;
 
     if (exerciseDate === "") {
-      exercicio = await descrOfExerc.create({
-        username: name,
-        description: exerciseName,
-        duration: exerciseDuration,
-        userId: id
-      });
       //Here i format the date to fit into the patterns of the exercise, in that case
       //i will use the default date of my schema
-      dateString = new Date(exercicio.date).toUTCString();
+      dateString = new Date().toUTCString();
       dateString = dateString
         .split(" ")
         .slice(0, 4)
         .join(" ");
       //*******/
+      exercicio = await descrOfExerc.create({
+        username: name,
+        description: exerciseName,
+        duration: exerciseDuration,
+        userId: id,
+        registerDate: dateString
+      });
+
       res.json({
         username: name,
         description: exerciseName,
         duration: exerciseDuration,
         _id: id,
-        date: dateString
+        registerDate: dateString
       });
     } else {
       //Here i format the date to fit into the patterns of the exercise, here i will
@@ -131,7 +145,6 @@ app.post("/api/exercise/add", async (req, res) => {
         .slice(0, 4)
         .join(" ");
       //*******/
-
       if (dateString === "Invalid Date") {
         res.json({ error: "invalida date" });
       } else {
@@ -140,14 +153,16 @@ app.post("/api/exercise/add", async (req, res) => {
           description: exerciseName,
           duration: exerciseDuration,
           userId: id,
+          registerDate: dateString,
           date: dateString
         });
+
         res.json({
           username: name,
           description: exerciseName,
           duration: exerciseDuration,
           _id: id,
-          date: dateString
+          registerDate: dateString
         });
       }
     }
@@ -157,26 +172,26 @@ app.post("/api/exercise/add", async (req, res) => {
 });
 
 //4 - Query information about the users
-app.get("/api/exercise/:userid", async (req, res) => {
-  const id = req.params.userid;
+app.get("/api/exercise/log?", async (req, res) => {
+  const { userid } = req.query;
+  const arrayquer = await descrOfExerc.find({ userId: userid });
+  if (arrayquer.length != 0) {
+    const arrayquerteste = await descrOfExerc
+      .find({ userId: userid })
+      .select("-_id description duration registerDate");
+    //I only want some parts of the query, so i will create another object with the atrtibutes
+    //what i want ans send it as response.
+    result = {
+      _id: arrayquer[0].userId,
+      username: arrayquer[0].username,
+      count: arrayquer.length,
+      log: arrayquerteste
+    };
 
-  const arrayquer = await descrOfExerc.find({ userId: id });
-  const arrayquerteste = await descrOfExerc
-    .find({ userId: id })
-    .select("-_id description duration date");
-  //REMEMBER : put the date in utc format
-
-  //I only want some parts of the query, so i will create another object with the atrtibutes
-  //what i want ans send it as response.
-  result = {
-    _id: arrayquer[0].userId,
-    username: arrayquer[0].username,
-    count: arrayquer.length,
-    log: arrayquerteste
-  };
-
-  res.json({
-    result
-  });
-  //Criar um objeto chamado query e depois usar seus atributos para serem inseridos na query.
+    res.json({
+      result
+    });
+  } else {
+    res.json("Unknow ID");
+  }
 });
