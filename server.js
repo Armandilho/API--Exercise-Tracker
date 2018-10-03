@@ -32,7 +32,7 @@ const User = new Schema({
   name: String
 });
 
-const Names = mongoose.model("Name", User);
+const Names = mongoose.model("naame", User);
 //******/
 
 //Creating Exercise Schema
@@ -58,7 +58,7 @@ const Exercises = new Schema({
   }
 });
 
-const descrOfExerc = mongoose.model("Exercise", Exercises);
+const descrOfExerc = mongoose.model("exeercise", Exercises);
 
 //******/
 app.get("/", (req, res) => res.sendFile("public/index.html"));
@@ -134,23 +134,49 @@ app.post("/api/exercise/add", async (req, res) => {
 
       if (dateString === "Invalid Date") {
         res.json({ error: "invalida date" });
+      } else {
+        await descrOfExerc.create({
+          username: name,
+          description: exerciseName,
+          duration: exerciseDuration,
+          userId: id,
+          date: dateString
+        });
+        res.json({
+          username: name,
+          description: exerciseName,
+          duration: exerciseDuration,
+          _id: id,
+          date: dateString
+        });
       }
-      await descrOfExerc.create({
-        username: name,
-        description: exerciseName,
-        duration: exerciseDuration,
-        userId: id,
-        date: dateString
-      });
-      res.json({
-        username: name,
-        description: exerciseName,
-        duration: exerciseDuration,
-        _id: id,
-        date: dateString
-      });
     }
   } else {
     res.json({ error: "this id does not exist in the database" });
   }
+});
+
+//4 - Query information about the users
+app.get("/api/exercise/:userid", async (req, res) => {
+  const id = req.params.userid;
+
+  const arrayquer = await descrOfExerc.find({ userId: id });
+  const arrayquerteste = await descrOfExerc
+    .find({ userId: id })
+    .select("-_id description duration date");
+  //REMEMBER : put the date in utc format
+
+  //I only want some parts of the query, so i will create another object with the atrtibutes
+  //what i want ans send it as response.
+  result = {
+    _id: arrayquer[0].userId,
+    username: arrayquer[0].username,
+    count: arrayquer.length,
+    log: arrayquerteste
+  };
+
+  res.json({
+    result
+  });
+  //Criar um objeto chamado query e depois usar seus atributos para serem inseridos na query.
 });
