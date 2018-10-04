@@ -103,6 +103,8 @@ app.post("/api/exercise/add", async (req, res) => {
     res.json("You did not filled the name of exercise");
   } else if (exerciseDuration === "") {
     res.json("You did not filled the duration of exercise");
+  } else if (Number.isInteger(exerciseDuration) === false) {
+    res.json("Please insert a integer number in duration");
   }
   const arrayquer = await Names.find({ _id: exerciseId });
 
@@ -146,7 +148,7 @@ app.post("/api/exercise/add", async (req, res) => {
         .join(" ");
       //*******/
       if (dateString === "Invalid Date") {
-        res.json({ error: "invalida Date" });
+        res.json({ error: "Invalid Date" });
       } else {
         await descrOfExerc.create({
           username: name,
