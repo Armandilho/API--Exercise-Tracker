@@ -1,0 +1,43 @@
+body {
+    background:rgb(224, 221, 201);
+}
+
+h1 {
+    text-align: center;
+}
+h3 {
+    text-align: center;
+}
+
+.center {
+    margin: auto;
+    width: 50%;
+    border: 3px solid rgb(69, 77, 69);
+    padding: 10px;
+    
+}
+
+ul { list-style: none; margin: 0; padding: 0; }
+li { margin: .2em 0; }
+a{
+    text-decoration: none;
+    
+}
+footer {
+    margin: auto;
+    width: 50%;
+    border: 3px solid rgb(69, 77, 69);
+    padding: 10px;
+    text-align: center
+}
+
+#info label { 
+    float: left; 
+    width: 35%; 
+    margin-right: 15px;
+    text-align: right; 
+}
+
+.teste {
+    text-align: center;
+}

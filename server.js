@@ -232,4 +232,4 @@ app.get("/api/exercise/log?", async (req, res) => {
 app.use((req, res, next) => {
   res.json({ status: 404, message: "not found" });
 });
-//http://localhost:3000/api/exercise/log?userid=7SxEyleqX&fromdate=1996-07-23&todate=2010-01-01
+//http://localhost:3000/api/exercise/log?userid=XtbTllRO_&fromdate=1996-07-23&todate=2010-01-01

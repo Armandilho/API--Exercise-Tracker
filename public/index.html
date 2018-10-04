@@ -5,28 +5,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>API - register</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
     <body>
-        <h1>Olá!!</h1>
-        <p>Site em construção...</p>
-        <h3>Registro de usuario</h3>
-        <form action="/exercise/new-user" method="post">
+        <h1>Exercise Tracker</h1>
+        <div class="center">
+        <h3>User register</h3>
+        <form id = "info" action="/exercise/new-user" method="post">
             <label for="name">Enter name: </label>
             <input type="text" id="name" name="username">
             <input type="submit" value="OK">
         </form>
-        <h3>Registro de Exercicio</h3>
-        <form action="/api/exercise/add" method="post">
-            <label for="name">Enter ID: </label>
-            <input type="text" id="name" name="exerciseId" placeholder="ID">
-            <label for="name">description: </label>
-            <input type="text" id="name" name="exerciseName" placeholder="description">
-            <label for="name">duration: </label>
-            <input type="text" id="name" name="exerciseDuration" placeholder="duration">
-            <label for="name">date: </label>
-            <input type="text" id="name" name="exerciseDate" placeholder="yyyy-mm-dd">
-            <input type="submit" value="OK">
-        </form>
-
+        <h3>Exercise Register</h3>
+            <form id = "info" action="/api/exercise/add" method="post">
+                <ul>
+                <li>
+                    <label for="name">User ID: </label>
+                    <input type="text" id="name" name="exerciseId" placeholder="ID">
+                </li>
+                <li>
+                    <label for="name">Description: </label>
+                    <input type="text" id="name" name="exerciseName" placeholder="description">
+                </li>
+                <li>
+                    <label for="name">Duration: </label>
+                    <input type="text" id="name" name="exerciseDuration" placeholder="duration">
+                </li>
+                <li>
+                    <label for="name">Date: </label>
+                    <input type="text" id="name" name="exerciseDate" placeholder="yyyy-mm-dd">
+                    <input type="submit" value="OK">
+                </li>
+                </ul>
+            </form>
+            <h3>Example of usage</h3>
+            <ul class="teste">
+                <li> 
+                    <h3>Use:</h3> 
+                    "http://localhost:3000/api/exercise/log?userid=XtbTllRO_"
+                </li>
+                <h4>
+                    To get all logs registered for this user
+                </h4>
+                <li> 
+                    <h3>Use:</h3> 
+                    "http://localhost:3000/api/exercise/log?userid=XtbTllRO_
+                    &fromdate=1996-07-23&todate=2010-01-01"
+                </li>
+                <h4>
+                    To get all logs registered for this user in the range between "fromdate" to
+                    "todate"
+                </h4>
+                <li> 
+                    <h3>Use:</h3>
+                    http://localhost:3000/api/exercise/log?userid=XtbTllRO_
+                    &fromdate=1996-07-23&todate=2010-01-01&limit=2
+                </li>
+                <h4>
+                    To get all logs registered for this user in the range between "fromdate" to
+                    "todate" and "limit" the amout of logs you will recive
+                </h4>
+            </ul>
+        </div>
+        <footer><a href="https://github.com/Armandilho" target="_blank">By Diego Armando</a></footer>
     </body>
 </html>
