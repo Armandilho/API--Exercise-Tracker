@@ -174,18 +174,27 @@ app.post("/api/exercise/add", async (req, res) => {
 //4 - Query information about the users
 app.get("/api/exercise/log?", async (req, res) => {
   const { userid } = req.query;
+  const { fromdate } = req.query;
+  const { todate } = req.query;
+  const { limit } = req.query;
+
+  console.log(userid);
   const arrayquer = await descrOfExerc.find({ userId: userid });
   if (arrayquer.length != 0) {
     const arrayquerteste = await descrOfExerc
       .find({ userId: userid })
       .select("-_id description duration registerDate");
+
+    arrayquertestenova = arrayquerteste.slice(0, limit);
+    console.log("Entrou aqui tambem");
+
     //I only want some parts of the query, so i will create another object with the atrtibutes
     //what i want ans send it as response.
     result = {
       _id: arrayquer[0].userId,
       username: arrayquer[0].username,
-      count: arrayquer.length,
-      log: arrayquerteste
+      count: arrayquertestenova.length,
+      log: arrayquertestenova
     };
 
     res.json({
@@ -195,3 +204,8 @@ app.get("/api/exercise/log?", async (req, res) => {
     res.json("Unknow ID");
   }
 });
+
+app.use((req, res, next) => {
+  res.json({ status: 404, message: "not found" });
+});
+//http://localhost:3000/api/exercise/log?userid=78mi3goiZ
