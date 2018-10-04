@@ -146,7 +146,7 @@ app.post("/api/exercise/add", async (req, res) => {
         .join(" ");
       //*******/
       if (dateString === "Invalid Date") {
-        res.json({ error: "invalida date" });
+        res.json({ error: "invalida Date" });
       } else {
         await descrOfExerc.create({
           username: name,
@@ -178,23 +178,47 @@ app.get("/api/exercise/log?", async (req, res) => {
   const { todate } = req.query;
   const { limit } = req.query;
 
-  console.log(userid);
+  //Query who will be done
   const arrayquer = await descrOfExerc.find({ userId: userid });
   if (arrayquer.length != 0) {
     const arrayquerteste = await descrOfExerc
       .find({ userId: userid })
-      .select("-_id description duration registerDate");
+      .select("-_id description duration registerDate date");
 
-    arrayquertestenova = arrayquerteste.slice(0, limit);
-    console.log("Entrou aqui tambem");
+    //Optional "date" filtering
+    if (fromdate == undefined || todate == undefined) {
+      arrfinal = arrayquerteste;
+    } else {
+      //transform fromdate and todate in "objects date" to do the comparation
+      const objfromdate = new Date(fromdate);
+      const objtodate = new Date(todate);
+
+      if (objfromdate == "Invalid Date" || objtodate == "Invalid Date") {
+        res.json("Invalid format of Date");
+      } else {
+        function filterByDate(obj) {
+          if (objfromdate < obj.date && obj.date < objtodate) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+        arrfinal = arrayquerteste.filter(filterByDate);
+      }
+    }
+    //optional limit filtering
+    console.log(limit);
+    if (limit !== undefined) {
+      arrfinal = arrayquerteste.slice(0, limit);
+    }
 
     //I only want some parts of the query, so i will create another object with the atrtibutes
     //what i want ans send it as response.
     result = {
       _id: arrayquer[0].userId,
       username: arrayquer[0].username,
-      count: arrayquertestenova.length,
-      log: arrayquertestenova
+      count: arrfinal.length,
+      log: arrfinal
     };
 
     res.json({
@@ -208,4 +232,4 @@ app.get("/api/exercise/log?", async (req, res) => {
 app.use((req, res, next) => {
   res.json({ status: 404, message: "not found" });
 });
-//http://localhost:3000/api/exercise/log?userid=78mi3goiZ
+//http://localhost:3000/api/exercise/log?userid=7SxEyleqX&fromdate=1996-07-23&todate=2010-01-01
