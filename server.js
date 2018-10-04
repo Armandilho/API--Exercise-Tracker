@@ -103,60 +103,32 @@ app.post("/api/exercise/add", async (req, res) => {
     res.json("You did not filled the name of exercise");
   } else if (exerciseDuration === "") {
     res.json("You did not filled the duration of exercise");
-  } else if (Number.isInteger(exerciseDuration) === false) {
+  } else if (Number.isInteger(parseInt(exerciseDuration)) === false) {
     res.json("Please insert a integer number in duration");
-  }
-  const arrayquer = await Names.find({ _id: exerciseId });
+  } else {
+    const arrayquer = await Names.find({ _id: exerciseId });
 
-  //Before the registering , i will search the database for possible matches. If something is
-  //found(A valid ID), i will create a model and insert into the mongodb database.
-  if (arrayquer.length != 0) {
-    const name = arrayquer[0].name;
-    const id = arrayquer[0]._id;
+    //Before the registering , i will search the database for possible matches. If something is
+    //found(A valid ID), i will create a model and insert into the mongodb database.
+    if (arrayquer.length != 0) {
+      const name = arrayquer[0].name;
+      const id = arrayquer[0]._id;
 
-    if (exerciseDate === "") {
-      //Here i format the date to fit into the patterns of the exercise, in that case
-      //i will use the default date of my schema
-      dateString = new Date().toUTCString();
-      dateString = dateString
-        .split(" ")
-        .slice(0, 4)
-        .join(" ");
-      //*******/
-      exercicio = await descrOfExerc.create({
-        username: name,
-        description: exerciseName,
-        duration: exerciseDuration,
-        userId: id,
-        registerDate: dateString
-      });
-
-      res.json({
-        username: name,
-        description: exerciseName,
-        duration: exerciseDuration,
-        _id: id,
-        registerDate: dateString
-      });
-    } else {
-      //Here i format the date to fit into the patterns of the exercise, here i will
-      //use the inserted date on body.paramater
-      dateString = new Date(exerciseDate).toUTCString();
-      dateString = dateString
-        .split(" ")
-        .slice(0, 4)
-        .join(" ");
-      //*******/
-      if (dateString === "Invalid Date") {
-        res.json({ error: "Invalid Date" });
-      } else {
-        await descrOfExerc.create({
+      if (exerciseDate === "") {
+        //Here i format the date to fit into the patterns of the exercise, in that case
+        //i will use the default date of my schema
+        dateString = new Date().toUTCString();
+        dateString = dateString
+          .split(" ")
+          .slice(0, 4)
+          .join(" ");
+        //*******/
+        exercicio = await descrOfExerc.create({
           username: name,
           description: exerciseName,
           duration: exerciseDuration,
           userId: id,
-          registerDate: dateString,
-          date: dateString
+          registerDate: dateString
         });
 
         res.json({
@@ -166,10 +138,39 @@ app.post("/api/exercise/add", async (req, res) => {
           _id: id,
           registerDate: dateString
         });
+      } else {
+        //Here i format the date to fit into the patterns of the exercise, here i will
+        //use the inserted date on body.paramater
+        dateString = new Date(exerciseDate).toUTCString();
+        dateString = dateString
+          .split(" ")
+          .slice(0, 4)
+          .join(" ");
+        //*******/
+        if (dateString === "Invalid Date") {
+          res.json({ error: "Invalid Date" });
+        } else {
+          await descrOfExerc.create({
+            username: name,
+            description: exerciseName,
+            duration: exerciseDuration,
+            userId: id,
+            registerDate: dateString,
+            date: dateString
+          });
+
+          res.json({
+            username: name,
+            description: exerciseName,
+            duration: exerciseDuration,
+            _id: id,
+            registerDate: dateString
+          });
+        }
       }
+    } else {
+      res.json({ error: "this id does not exist in the database" });
     }
-  } else {
-    res.json({ error: "this id does not exist in the database" });
   }
 });
 
@@ -234,4 +235,3 @@ app.get("/api/exercise/log?", async (req, res) => {
 app.use((req, res, next) => {
   res.json({ status: 404, message: "not found" });
 });
-//http://localhost:3000/api/exercise/log?userid=XtbTllRO_&fromdate=1996-07-23&todate=2010-01-01
